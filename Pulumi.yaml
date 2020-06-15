@@ -1,0 +1,3 @@
+name: victoria-cloud-backend-azure
+runtime: python
+description: Deploy a Victoria cloud backend to Azure
