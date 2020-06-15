@@ -13,8 +13,7 @@ to Pulumi.
 Author:
     Sam Gibson <sgibson@glasswallsolutions.com>
 """
-import os
-import sys
+import hashlib
 from typing import List
 
 import pulumi
@@ -37,6 +36,8 @@ storage_account = storage.Account(
     tags=tags,
     opts=pulumi.ResourceOptions(parent=resource_group))
 pulumi.export("storage_account_name", storage_account.name)
+pulumi.export("storage_connection_string",
+              storage_account.primary_connection_string)
 
 storage_container = storage.Container(
     "victoria",
@@ -69,9 +70,8 @@ def create_access_policies(obj_ids: List[str]) -> None:
     Pulumi Output (basically a future).
     """
     for obj_id in obj_ids:
-        # hash the object ID to keep it secret and unique -- add maxsize to
-        # keep it +ve (see: https://stackoverflow.com/a/18766695/13166789)
-        obj_id_hash = hash(obj_id) % ((sys.maxsize + 1) * 2)
+        # hash the object ID to keep it secret and unique
+        obj_id_hash = hashlib.sha256(obj_id.encode("utf-8")).hexdigest()
         access_policy_name = f"access-policy-{obj_id_hash}"
         policy = keyvault.AccessPolicy(
             access_policy_name,
