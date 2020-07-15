@@ -5,6 +5,7 @@ config:
   victoria-cloud-backend-azure:accessObjectIds:
   - secure: v1:sFnJaKsHrj+Isl7P:ZPUmj8F8BOqi4yVAVCtBP2n9d3142NRBOj3cZzCn+qGSzt1bws5zfGglKemHfEuk+M0FrA==
   - secure: v1:PsTih3iA5cRfDfT8:f5Xp3tbZGoI8SlDeundGc3JP8YCcp1gyjVeS73PUOZGihdxDj0p0MO5/Un6Janww0leNPw==
+  - secure: v1:NgA0hjyECJN3XdOZ:HK11XmHmouHug6hDMJlVNwzQ/QjYPvG0tV6mzTvNBgNaafGQjA+BvXvYojKH5kiBJIH9eA==
   victoria-cloud-backend-azure:tags:
     area: Shared
     group: SRE
