@@ -14,10 +14,13 @@ Author:
     Sam Gibson <sgibson@glasswallsolutions.com>
 """
 import hashlib
+import json
 from typing import List
 
 import pulumi
 from pulumi_azure import core, storage, keyvault
+
+stack_name = pulumi.get_stack()
 
 config = pulumi.Config()
 tags = config.require_object("tags")
@@ -59,33 +62,25 @@ pulumi.export("key_vault_name", key_vault.name)
 pulumi.export("key_vault_url", key_vault.vault_uri)
 
 # make sure we give relevant service principals access to this key vault's keys
-key_access_object_ids = config.require_secret_object("accessObjectIds")
+# first: load the object IDs of principals from a JSON file
+object_ids = []
+with open(f"{stack_name}.json", 'r') as json_file:
+    object_ids = json.load(json_file)
 
+# now: create the access policy on the key vault to give these principals access
 access_policies = []
-
-
-def create_access_policies(obj_ids: List[str]) -> None:
-    """Callback used to create access policies from the 'accessObjectIds'
-    config value. This is used because the object from the config is a
-    Pulumi Output (basically a future).
-    """
-    for obj_id in obj_ids:
-        # hash the object ID to keep it secret and unique
-        obj_id_hash = hashlib.sha256(obj_id.encode("utf-8")).hexdigest()
-        access_policy_name = f"access-policy-{obj_id_hash}"
-        policy = keyvault.AccessPolicy(
-            access_policy_name,
-            key_vault_id=key_vault.id,
-            object_id=obj_id,
-            tenant_id=tenant_id,
-            key_permissions=[
-                "create", "get", "list", "delete", "encrypt", "decrypt"
-            ],
-            opts=pulumi.ResourceOptions(parent=key_vault))
-        access_policies.append(policy)
-
-
-key_access_object_ids.apply(create_access_policies)
+for obj_id in object_ids:
+    access_policy_name = f"access-policy-{len(access_policies)}"
+    policy = keyvault.AccessPolicy(
+        access_policy_name,
+        key_vault_id=key_vault.id,
+        object_id=obj_id,
+        tenant_id=tenant_id,
+        key_permissions=[
+            "create", "get", "list", "delete", "encrypt", "decrypt"
+        ],
+        opts=pulumi.ResourceOptions(parent=key_vault))
+    access_policies.append(policy)
 
 # finally, create the key encryption key in the vault
 encryption_key = keyvault.Key(
