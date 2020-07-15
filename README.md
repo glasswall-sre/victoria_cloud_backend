@@ -3,10 +3,11 @@ Pulumi project for deploying Victoria cloud backend.
 
 ## Required Config
 - `azure:location`: The Azure location to deploy into.
-- `stack-name:tags`: Dict containing tags to put on resources.
-- `stack-name:tenantId` (SECRET): The Azure AD tenant ID to use for Key Vault 
+- `victoria-cloud-backend-azure:tags`: Dict containing tags to put on resources.
+- `victoria-cloud-backend-azure:tenantId` (SECRET): The Azure AD tenant ID to use for Key Vault 
   operations. This can be easily found with Azure CLI by running
   `az account show --query tenantId -o tsv`.
+- `victoria-cloud-backend-azure:keyVaultName`: The name of the Azure Key Vault.
 
 You also need to add service principal object IDs you want to be able to
 access the key vault to a JSON file with the same name as your stack. For

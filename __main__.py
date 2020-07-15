@@ -51,8 +51,9 @@ pulumi.export("container_name", storage_container.name)
 
 # now, the key vault
 tenant_id = config.require_secret("tenantId")
+keyvault_name = config.require("keyVaultName")
 key_vault = keyvault.KeyVault(
-    "kv-victoria",
+    keyvault_name,
     resource_group_name=resource_group.name,
     sku_name="standard",
     tenant_id=tenant_id,

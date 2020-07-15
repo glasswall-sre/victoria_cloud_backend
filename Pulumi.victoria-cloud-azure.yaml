@@ -2,6 +2,7 @@ secretsprovider: azurekeyvault://kv-pulumi-shared.vault.azure.net/keys/pulumi
 encryptedkey: YXdKYnhPZzFmVVRpSlUwUk1oa0dOS3FkeGZxM3ZHbGNRNjlEZXZROHpuWWI0bFltc2gyejNFLXVrUEtnX2h3V0xuZWRDZ0JBVmZjSThUMEJPZkNXUFJhVXlWd1BHUkQ1VUlNM0hqMWdwS1ljSDZDVHpwR0YwUTU2WUNpRm8wOTRsTnUxeWNMNVhPeEtaT3NfMENSZGlmV0JFNFdGT1B0ZFp2a2l1YWp1SUw3MnZnQURMVTZzQUZDcWhfUVpyS2p1eG15enI4aHdpNkRnckVqX0NiMmhMazRad2laVC1oQ3Zxa011OTRCNVF3M05IUS0tSm5va3JvRkpZWThER1Flbmp3MUs0YktFWkpLNzBJVy1va1VMTGlfS1VqTjRCZlY2cVVKbzRON3c2anVTY2E2cTF3ZnBJcEM4b1IxQ2NWS2ZxRzJYaDdZVFJPX21pQUw0em1rX2VB
 config:
   azure:location: uksouth
+  victoria-cloud-backend-azure:keyVaultName: kv-victoria
   victoria-cloud-backend-azure:tags:
     area: Shared
     group: SRE
