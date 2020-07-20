@@ -18,12 +18,18 @@ import json
 from typing import List
 
 import pulumi
-from pulumi_azure import core, storage, keyvault
+from pulumi_azure import core, storage, keyvault, authorization
 
 stack_name = pulumi.get_stack()
 
 config = pulumi.Config()
 tags = config.require_object("tags")
+
+# the service principals in the JSON file are given access to Victoria
+# cloud backend resources
+object_ids = []
+with open(f"{stack_name}.json", 'r') as json_file:
+    object_ids = json.load(json_file)
 
 # deploy the resource group
 resource_group = core.ResourceGroup("rg-victoria", tags=tags)
@@ -41,6 +47,16 @@ storage_account = storage.Account(
 pulumi.export("storage_account_name", storage_account.name)
 pulumi.export("storage_connection_string",
               storage_account.primary_connection_string)
+
+# make sure the service principals have access to the Azure Blob Storage
+i = 0
+for obj_id in object_ids:
+    role_assignment = authorization.Assignment(
+        f"blob-access-{i}",
+        scope=storage_account.id,
+        role_definition_name="Storage Blob Data Contributor",
+        principal_id=obj_id)
+    i += 1
 
 storage_container = storage.Container(
     "victoria",
@@ -62,13 +78,7 @@ key_vault = keyvault.KeyVault(
 pulumi.export("key_vault_name", key_vault.name)
 pulumi.export("key_vault_url", key_vault.vault_uri)
 
-# make sure we give relevant service principals access to this key vault's keys
-# first: load the object IDs of principals from a JSON file
-object_ids = []
-with open(f"{stack_name}.json", 'r') as json_file:
-    object_ids = json.load(json_file)
-
-# now: create the access policy on the key vault to give these principals access
+# create the access policy on the key vault to give the principals access
 access_policies = []
 for obj_id in object_ids:
     access_policy_name = f"access-policy-{len(access_policies)}"

@@ -10,8 +10,8 @@ Pulumi project for deploying Victoria cloud backend.
 - `victoria-cloud-backend-azure:keyVaultName`: The name of the Azure Key Vault.
 
 You also need to add service principal object IDs you want to be able to
-access the key vault to a JSON file with the same name as your stack. For
+access the key vault and storage account to a JSON file with the same name as your stack. For
 an example of this please see `victoria-cloud-azure.json` (note it has the
 same name as the stack `Pulumi.victoria-cloud-azure.yaml`). As a minimum, the
 object ID of the service principal Pulumi is running under will need to have
-access to the key vault, so it can create a key.
+access to the key vault, so it can create a key in the key vault.
