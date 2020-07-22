@@ -15,3 +15,30 @@ an example of this please see `victoria-cloud-azure.json` (note it has the
 same name as the stack `Pulumi.victoria-cloud-azure.yaml`). As a minimum, the
 object ID of the service principal Pulumi is running under will need to have
 access to the key vault, so it can create a key in the key vault.
+
+## Deploying config files to your cloud storage backend
+It's good practice to keep your Victoria common config files in source control
+and deploy them with CI/CD. This way you can version them.
+
+You can do this in a GitHub action like so (using `./config_files` here as
+an example):
+```yaml
+- name: Log in to Azure CLI
+  uses: azure/login@v1
+  with:
+    creds: ${{ secrets.azure_credentials }}
+- name: Upload config files to blob storage
+  uses: azure/CLI@v1
+  with:
+    inlineScript: |
+      az storage blob upload-batch -d $(pulumi stack output container_name) \
+        --account-name $(pulumi stack output storage_account_name) \
+        --auth-mode login \
+        -s ./config_files
+```
+
+This just uses the Azure CLI to upload them, so similar approaches will work
+for other CI/CD methods. At Glasswall we deploy ours with Azure Pipelines.
+
+The config files in `./config_files` are the ones we actually use, complete
+with encrypted sensitive data.
