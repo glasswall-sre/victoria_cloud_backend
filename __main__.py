@@ -49,14 +49,12 @@ pulumi.export("storage_connection_string",
               storage_account.primary_connection_string)
 
 # make sure the service principals have access to the Azure Blob Storage
-i = 0
 for obj_id in object_ids:
     role_assignment = authorization.Assignment(
-        f"blob-access-{i}",
+        f"blob-assignment-{obj_id}",
         scope=storage_account.id,
         role_definition_name="Storage Blob Data Contributor",
         principal_id=obj_id)
-    i += 1
 
 storage_container = storage.Container(
     "victoria",
@@ -81,7 +79,7 @@ pulumi.export("key_vault_url", key_vault.vault_uri)
 # create the access policy on the key vault to give the principals access
 access_policies = []
 for obj_id in object_ids:
-    access_policy_name = f"access-policy-{len(access_policies)}"
+    access_policy_name = f"access-policy-{obj_id}"
     policy = keyvault.AccessPolicy(
         access_policy_name,
         key_vault_id=key_vault.id,
